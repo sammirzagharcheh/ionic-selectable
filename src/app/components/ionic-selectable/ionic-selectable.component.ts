@@ -1,5 +1,5 @@
 // tslint:disable-next-line:max-line-length
-import { Component, ContentChild, DoCheck, ElementRef, EventEmitter, forwardRef, HostBinding, Input, IterableDiffer, IterableDiffers, OnInit, Optional, Output, Renderer, TemplateRef, ViewEncapsulation } from '@angular/core';
+import { Component, ContentChild, DoCheck, ElementRef, EventEmitter, forwardRef, HostBinding, Input, IterableDiffer, IterableDiffers, OnInit, Optional, Output, Renderer2, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonItem, ModalController, Platform } from '@ionic/angular';
 import { AnimationBuilder, ModalOptions } from '@ionic/core';
@@ -19,6 +19,7 @@ import { IonicSelectablePlaceholderTemplateDirective } from './ionic-selectable-
 import { IonicSelectableSearchFailTemplateDirective } from './ionic-selectable-search-fail-template.directive';
 import { IonicSelectableTitleTemplateDirective } from './ionic-selectable-title-template.directive';
 import { IonicSelectableValueTemplateDirective } from './ionic-selectable-value-template.directive';
+import { IonicSelectableIconTemplateDirective } from './ionic-selectable-icon-template.directive';
 
 @Component({
   selector: 'ionic-selectable',
@@ -783,6 +784,8 @@ export class IonicSelectableComponent implements ControlValueAccessor, OnInit, D
   headerTemplate: TemplateRef<any>;
   @ContentChild(IonicSelectableItemIconTemplateDirective, { read: TemplateRef })
   itemIconTemplate: TemplateRef<any>;
+  @ContentChild(IonicSelectableIconTemplateDirective, { read: TemplateRef })
+  iconTemplate: TemplateRef<any>;
 
   /**
    * See Ionic VirtualScroll [headerFn](https://ionicframework.com/docs/api/components/virtual-scroll/VirtualScroll/).
@@ -801,7 +804,7 @@ export class IonicSelectableComponent implements ControlValueAccessor, OnInit, D
     @Optional() private ionItem: IonItem,
     private _iterableDiffers: IterableDiffers,
     private _element: ElementRef,
-    private _renderer: Renderer
+    private _renderer: Renderer2
   ) {
     if (!this.items || !this.items.length) {
       this.items = [];
@@ -1290,7 +1293,12 @@ export class IonicSelectableComponent implements ControlValueAccessor, OnInit, D
       return;
     }
 
-    this._renderer.setElementClass(this._ionItemElement, cssClass, shouldAdd);
+    // Change to Renderer2
+    if (shouldAdd) {
+      this._renderer.addClass(this._ionItemElement, cssClass);
+    } else {
+      this._renderer.removeClass(this._ionItemElement, cssClass);
+    }
   }
 
   private _toggleAddItemTemplate(isVisible: boolean) {
